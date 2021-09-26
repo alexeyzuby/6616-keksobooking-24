@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг»
 
 * Студент: [Алексей Зубарев](https://up.htmlacademy.ru/javascript/24/user/6616).
-* Наставник: `Неизвестно`.
+* Наставник: [Александр Арбузов](https://htmlacademy.ru/profile/arbualex).
 
 ---
 
