@@ -1,8 +1,10 @@
 const ADS_COUNT = 10;
-const MIN_VALUE = 0;
+const MIN_ARRAY_LENGTH = 1;
+const MIN_ARRAY_INDEX = 0;
 const MAX_PRICE = 10000;
 const MAX_ROOMS = 10;
 const MAX_GUESTS = 10;
+const LOCATION_DIGITS = 5;
 const OFFER = {
   TITLES: [
     'Best offer ever!',
@@ -77,10 +79,12 @@ const getRandomFloat = ( min, max, fractionDigits ) => {
 
 const getRandomArray = ( data ) => {
   const maxLength = data.length;
+  const arrayLength = getRandomInt( MIN_ARRAY_LENGTH, maxLength );
   const array = [];
 
-  while( array.length < getRandomInt( 1, maxLength ) ) {
-    const element = data[ getRandomInt( 0, maxLength - 1 ) ];
+  while( array.length < arrayLength ) {
+    const index = getRandomInt( MIN_ARRAY_INDEX, maxLength - 1 );
+    const element = data[ index ];
 
     if( !array.includes( element ) ) {
       array.push( element );
@@ -90,25 +94,31 @@ const getRandomArray = ( data ) => {
   return array;
 };
 
+const getRandomArrayElement = ( data ) => {
+  const index = getRandomInt( MIN_ARRAY_INDEX, data.length - 1 );
+
+  return data[ index ];
+};
+
 const createRandomAd = ( ad, id ) => {
-  const randomLat = getRandomFloat( LOCATION.LAT.MIN, LOCATION.LAT.MAX, 5 );
-  const randomLng = getRandomFloat( LOCATION.LNG.MIN, LOCATION.LNG.MAX, 5 );
+  const randomLat = getRandomFloat( LOCATION.LAT.MIN, LOCATION.LAT.MAX, LOCATION_DIGITS );
+  const randomLng = getRandomFloat( LOCATION.LNG.MIN, LOCATION.LNG.MAX, LOCATION_DIGITS );
 
   return {
     author: {
-      avatar: `img/avatars/user${ String( ++id ).padStart( 2, '0' ) }.png`,
+      avatar: `img/avatars/user${ String( id + 1 ).padStart( 2, '0' ) }.png`,
     },
     offer: {
-      title: OFFER.TITLES[ getRandomInt( MIN_VALUE, OFFER.TITLES.length - 1 ) ],
+      title: getRandomArrayElement( OFFER.TITLES ),
       address: `${ randomLat }, ${ randomLng }`,
-      price: getRandomInt( MIN_VALUE, MAX_PRICE ),
-      type: OFFER.TYPES[ getRandomInt( MIN_VALUE, OFFER.TYPES.length - 1 ) ],
-      rooms: getRandomInt( MIN_VALUE, MAX_ROOMS ),
-      guests: getRandomInt( MIN_VALUE, MAX_GUESTS ),
-      checkin: OFFER.TIME[ getRandomInt( MIN_VALUE, OFFER.TIME.length - 1 ) ],
-      checkout: OFFER.TIME[ getRandomInt( MIN_VALUE, OFFER.TIME.length - 1 ) ],
+      price: getRandomInt( MIN_ARRAY_INDEX, MAX_PRICE ),
+      type: getRandomArrayElement( OFFER.TYPES ),
+      rooms: getRandomInt( MIN_ARRAY_INDEX, MAX_ROOMS ),
+      guests: getRandomInt( MIN_ARRAY_INDEX, MAX_GUESTS ),
+      checkin: getRandomArrayElement( OFFER.TIME ),
+      checkout: getRandomArrayElement( OFFER.TIME ),
       features: getRandomArray( OFFER.FEATURES ),
-      description: OFFER.DESCRIPTIONS[ getRandomInt( MIN_VALUE, OFFER.DESCRIPTIONS.length - 1 ) ],
+      description: getRandomArrayElement( OFFER.DESCRIPTIONS ),
       photos: getRandomArray( OFFER.PHOTOS ),
     },
     location: {
