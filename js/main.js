@@ -1,3 +1,3 @@
-import { ADS_COUNT, createAd } from './data.js';
+import { renderAdvert } from './advert.js';
 
-Array.from( { length: ADS_COUNT }, createAd );
+renderAdvert( 0 );

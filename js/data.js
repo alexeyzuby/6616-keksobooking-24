@@ -1,15 +1,15 @@
-import { getRandom } from './random.js';
+import { getRandom } from './utils/random.js';
 
 const TITLES = [
-  'Best offer ever!',
-  'Cozy apartment in the center',
-  'You\'ve never seen such real estate',
+  'Лучшее предложение!',
+  'Уютная квартира в центре',
+  'Вы никогда не видели так прекрасной недвижимости',
 ];
 
 const DESCRIPTIONS = [
-  'The best deal you\'ve ever seen',
-  'Small apartment suitable for pets',
-  'Chic mansions for parties',
+  'Лучшее предложение, которое вы когда-либо видели',
+  'Небольшая квартира, подходящая для домашних животных',
+  'Шикарный особняк для вечеринок',
 ];
 
 const TYPES = [
@@ -43,16 +43,16 @@ const TIME = [
 
 const PRICE = {
   MIN: 0,
-  MAX: 10000,
+  MAX: 1000000,
 };
 
 const ROOMS = {
-  MIN: 0,
+  MIN: 1,
   MAX: 10,
 };
 
 const GUESTS = {
-  MIN: 0,
+  MIN: 1,
   MAX: 10,
 };
 
@@ -68,9 +68,7 @@ const LOCATION = {
   },
 };
 
-const ADS_COUNT = 10;
-
-const createAd = ( ad, id ) => {
+const generateAdvertData = ( ad, id ) => {
   const randomLat = getRandom.float( LOCATION.LAT.MIN, LOCATION.LAT.MAX, LOCATION.DIGITS );
   const randomLng = getRandom.float( LOCATION.LNG.MIN, LOCATION.LNG.MAX, LOCATION.DIGITS );
 
@@ -98,4 +96,4 @@ const createAd = ( ad, id ) => {
   };
 };
 
-export { ADS_COUNT, createAd };
+export { generateAdvertData };
