@@ -29,15 +29,18 @@ const advertTemplate = document.querySelector( '#card' ).content.querySelector( 
 const advertListFragment = document.createDocumentFragment();
 
 const addAdvertTextContent = ( element, selector, content ) => {
-  if( content ) {
-    element.querySelector( selector ).textContent = content;
-  } else {
-    element.querySelector( selector ).remove();
-  }
+  content ? element.querySelector( selector ).textContent = content : element.querySelector( selector ).remove();
 };
 
 const createAdvert = ( { author, offer } ) => {
   const advert = advertTemplate.cloneNode( true );
+  const priceElement = advert.querySelector( '.popup__text--price' );
+  const timeElement = advert.querySelector( '.popup__text--time' );
+  const capacityElement = advert.querySelector( '.popup__text--capacity' );
+  const photoElement = advert.querySelector( '.popup__photo' );
+  const photosElement = advert.querySelector( '.popup__photos' );
+  const roomsDeclension = declension( offer.rooms, ROOMS_DECLENSIONS );
+  const guestsDeclension = declension( offer.guests, GUESTS_DECLENSIONS );
 
   advert.querySelector( '.popup__avatar' ).src = author.avatar ? author.avatar : 'img/avatars/default.png';
 
@@ -46,26 +49,9 @@ const createAdvert = ( { author, offer } ) => {
   addAdvertTextContent( advert, '.popup__description', offer.description );
   addAdvertTextContent( advert, '.popup__type', OFFER_TYPES_NAMES[ offer.type ] );
 
-  if( offer.price ) {
-    advert.querySelector( '.popup__text--price' ).textContent = `${ offer.price } ₽/ночь`;
-  } else {
-    advert.querySelector( '.popup__text--price' ).remove();
-  }
-
-  if( offer.rooms && offer.guests ) {
-    const roomsDeclension = declension( offer.rooms, ROOMS_DECLENSIONS );
-    const guestsDeclension = declension( offer.guests, GUESTS_DECLENSIONS );
-
-    advert.querySelector( '.popup__text--capacity' ).textContent = `${ offer.rooms } ${ roomsDeclension } для ${ offer.guests } ${ guestsDeclension }`;
-  } else {
-    advert.querySelector( '.popup__text--capacity' ).remove();
-  }
-
-  if( offer.checkin && offer.checkout ) {
-    advert.querySelector( '.popup__text--time' ).textContent = `Заезд после ${ offer.checkin }, выезд до ${ offer.checkout }`;
-  } else {
-    advert.querySelector( '.popup__text--time' ).remove();
-  }
+  offer.price ? priceElement.textContent = `${ offer.price } ₽/ночь` : priceElement.remove();
+  offer.checkin && offer.checkout ? timeElement.textContent = `Заезд после ${ offer.checkin }, выезд до ${ offer.checkout }` : timeElement.remove();
+  offer.rooms && offer.guests ? capacityElement.textContent = `${ offer.rooms } ${ roomsDeclension } для ${ offer.guests } ${ guestsDeclension }` : capacityElement.remove();
 
   advert.querySelectorAll( '.popup__feature' ).forEach( ( feature ) => {
     const isChecked = offer.features.some(
@@ -80,15 +66,15 @@ const createAdvert = ( { author, offer } ) => {
   if( offer.photos ) {
     offer.photos.forEach( ( url, index ) => {
       if( index === 0 ) {
-        advert.querySelector( '.popup__photo' ).src = url;
+        photoElement.src = url;
       } else {
-        const clonedPhoto = advert.querySelector( '.popup__photo' ).cloneNode();
+        const clonedPhoto = photoElement.cloneNode();
         clonedPhoto.src = url;
-        advert.querySelector( '.popup__photos' ).appendChild( clonedPhoto );
+        photosElement.appendChild( clonedPhoto );
       }
     } );
   } else {
-    advert.querySelector( '.popup__photos' ).remove();
+    photosElement.remove();
   }
 
   advertListFragment.appendChild( advert );
