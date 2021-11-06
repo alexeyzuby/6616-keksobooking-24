@@ -1,35 +1,72 @@
-const DISABLED_CLASSES = {
-  AD: 'ad-form--disabled',
-  MAP: 'map__filters--disabled',
+const MIN_TITLE_LENGTH = 30;
+const MAX_PRICE_VALUE = 1000000;
+const ERROR_CLASS = 'has-error';
+
+const NOT_FOR_GUESTS_VALUES = {
+  CAPACITY: 0,
+  ROOMS: 100,
 };
 
 const adForm = document.querySelector( '.ad-form' );
-const mapFilter = document.querySelector( '.map__filters' );
-const adFormFields = adForm.querySelectorAll( 'fieldset' );
-const mapFilterSelects = mapFilter.querySelectorAll( '.map__filter' );
-const mapFilterFeatures = mapFilter.querySelector( '.map__features' );
+const adFormTitle = adForm.querySelector( '#title' );
+const adFormPrice = adForm.querySelector( '#price' );
+const adFormRooms = adForm.querySelector( '#room_number' );
+const adFormCapacity = adForm.querySelector( '#capacity' );
 
-const toggleDisabledClass = ( isDisabled, selector, disabledClass ) => {
-  isDisabled ? selector.classList.add( disabledClass ) : selector.classList.remove( disabledClass );
-};
+const titleValidateHandler = () => {
+  const valueLength = adFormTitle.value.length;
 
-const toggleDisabledAttr = ( isDisabled, selector ) => {
-  selector.forEach( ( item ) => {
-    item.disabled = isDisabled;
-  } );
-};
-
-const disableForm = ( isDisabled ) => {
-  if( typeof isDisabled !== 'boolean' ) {
-    throw new Error( 'isDisabled param must be boolean' );
+  if( valueLength < MIN_TITLE_LENGTH ) {
+    adFormTitle.setCustomValidity( `Ещё ${ MIN_TITLE_LENGTH - valueLength } символов` );
+    adFormTitle.classList.add( ERROR_CLASS );
+  } else {
+    adFormTitle.setCustomValidity( '' );
+    adFormTitle.classList.remove( ERROR_CLASS );
   }
 
-  toggleDisabledClass( isDisabled, adForm, DISABLED_CLASSES.AD );
-  toggleDisabledClass( isDisabled, mapFilter, DISABLED_CLASSES.MAP );
-  toggleDisabledAttr( isDisabled, adFormFields );
-  toggleDisabledAttr( isDisabled, mapFilterSelects );
-
-  mapFilterFeatures.disabled = isDisabled;
+  adFormTitle.reportValidity();
 };
 
-export { disableForm };
+const priceValidateHandler = () => {
+  const value = adFormPrice.value;
+
+  if( value > MAX_PRICE_VALUE ) {
+    adFormPrice.setCustomValidity( 'Цена должна быть меньше или равна 1000000' );
+    adFormPrice.classList.add( ERROR_CLASS );
+  } else {
+    adFormPrice.setCustomValidity( '' );
+    adFormPrice.classList.remove( ERROR_CLASS );
+  }
+
+  adFormPrice.reportValidity();
+};
+
+const roomsValidateHandler = () => {
+  const rooms = Number( adFormRooms.value );
+  const capacity = Number( adFormCapacity.value );
+
+  if( rooms === NOT_FOR_GUESTS_VALUES.ROOMS && capacity !== NOT_FOR_GUESTS_VALUES.CAPACITY ) {
+    adFormRooms.setCustomValidity( 'Не подходит для гостей' );
+    adFormRooms.classList.add( ERROR_CLASS );
+  } else if( rooms !== NOT_FOR_GUESTS_VALUES.ROOMS && capacity === NOT_FOR_GUESTS_VALUES.CAPACITY ) {
+    adFormRooms.setCustomValidity( 'Подходят только 100 комнат' );
+    adFormRooms.classList.add( ERROR_CLASS );
+  } else if( rooms < capacity ) {
+    adFormRooms.setCustomValidity( 'Количество комнат не должно превышать количество гостей' );
+    adFormRooms.classList.add( ERROR_CLASS );
+  } else {
+    adFormRooms.setCustomValidity( '' );
+    adFormRooms.classList.remove( ERROR_CLASS );
+  }
+
+  adFormRooms.reportValidity();
+};
+
+const validateForm = () => {
+  adFormTitle.addEventListener( 'input', titleValidateHandler );
+  adFormPrice.addEventListener( 'input', priceValidateHandler );
+  adFormRooms.addEventListener( 'change', roomsValidateHandler );
+  adFormCapacity.addEventListener( 'change', roomsValidateHandler );
+};
+
+export { validateForm };
