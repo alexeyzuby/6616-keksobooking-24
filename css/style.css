@@ -394,6 +394,12 @@ fieldset {
           box-shadow: 0 0 2px 2px #ff6547;
 }
 
+.ad-form__element input.has-error,
+.ad-form__element select.has-error,
+.ad-form__element textarea.has-error {
+  border-color: #ff6547;
+}
+
 .ad-form__element--time {
   -ms-flex-preferred-size: 50%;
       flex-basis: 50%;

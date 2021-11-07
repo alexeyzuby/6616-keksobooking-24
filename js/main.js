@@ -1,5 +1,7 @@
 import { renderAdvert } from './advert.js';
-import { disableForm } from './form.js';
+import { setPageActivity } from './page.js';
+import { validateForm } from './form.js';
 
 renderAdvert( 0 );
-disableForm( true );
+setPageActivity( true );
+validateForm();
