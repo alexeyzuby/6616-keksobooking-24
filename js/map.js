@@ -12,13 +12,13 @@ const DEFAULT_COORDINATES = {
 };
 
 const MAIN_PIN = {
-  URL: '../img/main-pin.svg',
+  URL: 'img/main-pin.svg',
   SIZE: [ 52, 52 ],
   ANCHOR: [ 26, 52 ],
 };
 
 const ADVERT_PIN = {
-  URL: '../img/pin.svg',
+  URL: 'img/pin.svg',
   SIZE: [ 40, 40 ],
   ANCHOR: [ 20, 40 ],
 };
