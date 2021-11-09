@@ -1,7 +1,4 @@
 import { declension } from './utils/declension.js';
-import { generateAdvertData } from './data.js';
-
-const ADS_COUNT = 10;
 
 const OFFER_TYPES_NAMES = {
   palace: 'Дворец',
@@ -23,10 +20,7 @@ const GUESTS_DECLENSIONS = [
   'гостей',
 ];
 
-const similarAdverts = Array.from( { length: ADS_COUNT }, generateAdvertData );
-const mapCanvas = document.querySelector( '#map-canvas' );
 const advertTemplate = document.querySelector( '#card' ).content.querySelector( '.popup' );
-const advertListFragment = document.createDocumentFragment();
 
 const addAdvertTextContent = ( element, selector, content ) => {
   content ? element.querySelector( selector ).textContent = content : element.querySelector( selector ).remove();
@@ -77,12 +71,7 @@ const createAdvert = ( { author, offer } ) => {
     photosElement.remove();
   }
 
-  advertListFragment.appendChild( advert );
+  return advert;
 };
 
-const renderAdvert = ( index ) => {
-  createAdvert( similarAdverts[ index ] );
-  mapCanvas.appendChild( advertListFragment );
-};
-
-export { renderAdvert };
+export { createAdvert };

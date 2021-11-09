@@ -1,7 +1,7 @@
-import { renderAdvert } from './advert.js';
 import { setPageActivity } from './page.js';
 import { validateForm } from './form.js';
+import { initMap } from './map.js';
 
-renderAdvert( 0 );
-setPageActivity( true );
+setPageActivity( false );
 validateForm();
+initMap();
