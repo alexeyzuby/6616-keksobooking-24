@@ -45,14 +45,20 @@ const createAdvert = ( { author, offer } ) => {
 
   offer.price ? priceElement.textContent = `${ offer.price } ₽/ночь` : priceElement.remove();
   offer.checkin && offer.checkout ? timeElement.textContent = `Заезд после ${ offer.checkin }, выезд до ${ offer.checkout }` : timeElement.remove();
-  offer.rooms && offer.guests ? capacityElement.textContent = `${ offer.rooms } ${ roomsDeclension } для ${ offer.guests } ${ guestsDeclension }` : capacityElement.remove();
+  offer.rooms && offer.guests ? capacityElement.textContent = `${ offer.rooms } ${ roomsDeclension } для ${ offer.guests } ${ guestsDeclension }` :
+    capacityElement.remove();
+
 
   advert.querySelectorAll( '.popup__feature' ).forEach( ( feature ) => {
-    const isChecked = offer.features.some(
-      ( offerFeature ) => feature.classList.contains( `popup__feature--${ offerFeature }` ),
-    );
+    if( offer.features ) {
+      const isChecked = offer.features.some(
+        ( offerFeature ) => feature.classList.contains( `popup__feature--${ offerFeature }` ),
+      );
 
-    if( !isChecked ) {
+      if( !isChecked ) {
+        feature.remove();
+      }
+    } else {
       feature.remove();
     }
   } );
