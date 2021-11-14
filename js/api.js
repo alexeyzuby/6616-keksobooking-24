@@ -16,8 +16,8 @@ const getData = ( onSuccess, onError ) => {
   fetch( 'https://24.javascript.pages.academy/keksobooking/data' )
     .then( ( response ) => response.json() )
     .then( ( adverts ) => onSuccess( adverts ) )
-    .catch( ( err ) => {
-      onError( err );
+    .catch( () => {
+      onError();
     } );
 };
 

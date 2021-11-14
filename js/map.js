@@ -107,15 +107,15 @@ const initMap = () => {
     adverts.forEach( ( advert ) => {
       createPin( advert );
     } );
-  }, ( err ) => showAlert( err ) );
+  }, () => showAlert( 'При загрузке данных с сервера произошла ошибка' ) );
 };
 
 const resetMapHandler = () => {
   initMainPinCoordinates();
 
-  markerGroup.eachLayer((layer) => {
+  markerGroup.eachLayer( ( layer ) => {
     layer.closePopup();
-  });
+  } );
 };
 
 export { initMap, resetMapHandler };
