@@ -1,9 +1,10 @@
 import { setPageActivity } from './page.js';
-import { generateAdvertData } from './data.js';
 import { createAdvert } from './advert.js';
+import { showAlert } from './utils/alert.js';
+import { validateForm } from './form.js';
+import { getData } from './api.js';
 
 const FRACTION_DIGITS = 5;
-const ADS_COUNT = 10;
 
 const DEFAULT_COORDINATES = {
   LAT: 35.65283,
@@ -23,31 +24,61 @@ const ADVERT_PIN = {
   ANCHOR: [ 20, 40 ],
 };
 
+const adForm = document.querySelector( '.ad-form' );
+const addressField = adForm.querySelector( '#address' );
+
+const map = L.map( 'map-canvas' );
+
+const mainPin = L.icon( {
+  iconUrl: MAIN_PIN.URL,
+  iconSize: MAIN_PIN.SIZE,
+  iconAnchor: MAIN_PIN.ANCHOR,
+} );
+
+const mainMarker = L.marker(
+  {
+    lat: DEFAULT_COORDINATES.LAT,
+    lng: DEFAULT_COORDINATES.LNG,
+  },
+  {
+    draggable: true,
+    icon: mainPin,
+  },
+);
+
+const markerGroup = L.layerGroup().addTo( map );
+
+const initMainPinCoordinates = () => {
+  mainMarker.setLatLng( {
+    lat: DEFAULT_COORDINATES.LAT,
+    lng: DEFAULT_COORDINATES.LNG,
+  } );
+
+  addressField.value = `${ DEFAULT_COORDINATES.LAT }, ${ DEFAULT_COORDINATES.LNG }`;
+};
+
 const initMap = () => {
-  const adForm = document.querySelector( '.ad-form' );
-  const addressField = adForm.querySelector( '#address' );
-
-  const map = L.map( 'map-canvas' )
-    .on( 'load', () => {
-      setPageActivity( true );
-      addressField.value = `${ DEFAULT_COORDINATES.LAT }, ${ DEFAULT_COORDINATES.LNG }`;
-    } )
-    .setView( {
-      lat: DEFAULT_COORDINATES.LAT,
-      lng: DEFAULT_COORDINATES.LNG,
-    }, DEFAULT_COORDINATES.ZOOM );
-
-  L.tileLayer(
+  const mapLayout = L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     },
-  ).addTo( map );
+  );
 
-  const mainPin = L.icon( {
-    iconUrl: MAIN_PIN.URL,
-    iconSize: MAIN_PIN.SIZE,
-    iconAnchor: MAIN_PIN.ANCHOR,
+  map.on( 'load', () => {
+    setPageActivity( true );
+    validateForm();
+    addressField.value = `${ DEFAULT_COORDINATES.LAT }, ${ DEFAULT_COORDINATES.LNG }`;
+  } ).setView( {
+    lat: DEFAULT_COORDINATES.LAT,
+    lng: DEFAULT_COORDINATES.LNG,
+  }, DEFAULT_COORDINATES.ZOOM );
+
+  mapLayout.addTo( map );
+  mainMarker.addTo( map );
+
+  mainMarker.on( 'moveend', ( evt ) => {
+    addressField.value = `${ evt.target.getLatLng().lat.toFixed( FRACTION_DIGITS ) }, ${ evt.target.getLatLng().lng.toFixed( FRACTION_DIGITS ) }`;
   } );
 
   const advertPin = L.icon( {
@@ -55,27 +86,6 @@ const initMap = () => {
     iconSize: ADVERT_PIN.SIZE,
     iconAnchor: ADVERT_PIN.ANCHOR,
   } );
-
-  const mainMarker = L.marker(
-    {
-      lat: DEFAULT_COORDINATES.LAT,
-      lng: DEFAULT_COORDINATES.LNG,
-    },
-    {
-      draggable: true,
-      icon: mainPin,
-    },
-  );
-
-  mainMarker.addTo( map );
-
-  mainMarker.on( 'moveend', ( evt ) => {
-    addressField.value = `${ evt.target.getLatLng().lat.toFixed( FRACTION_DIGITS ) }, ${ evt.target.getLatLng().lng.toFixed( FRACTION_DIGITS ) }`;
-  } );
-
-  const adverts = Array.from( { length: ADS_COUNT }, generateAdvertData );
-
-  const markerGroup = L.layerGroup().addTo( map );
 
   const createPin = ( advert ) => {
     const marker = L.marker(
@@ -93,9 +103,19 @@ const initMap = () => {
       .bindPopup( createAdvert( advert ) );
   };
 
-  adverts.forEach( ( advert ) => {
-    createPin( advert );
+  getData( ( adverts ) => {
+    adverts.forEach( ( advert ) => {
+      createPin( advert );
+    } );
+  }, () => showAlert( 'При загрузке данных с сервера произошла ошибка' ) );
+};
+
+const resetMapHandler = () => {
+  initMainPinCoordinates();
+
+  markerGroup.eachLayer( ( layer ) => {
+    layer.closePopup();
   } );
 };
 
-export { initMap };
+export { initMap, resetMapHandler };
