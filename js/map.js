@@ -1,14 +1,19 @@
-import { setPageActivity } from './page.js';
+import { adForm, mapFilters } from './data.js';
 import { createAdvert } from './advert.js';
-import { showAlert } from './utils/alert.js';
-import { validateForm } from './form.js';
+import { compareAdvertData } from './filter.js';
 import { getData } from './api.js';
+import { setFilterActivity, setFormActivity } from './page.js';
+import { showAlert } from './alert.js';
+import { debounce } from './utils/debounce.js';
+import { validateForm } from './form.js';
 
 const FRACTION_DIGITS = 5;
+const RERENDER_DELAY = 500;
+const ADS_COUNT = 10;
 
 const DEFAULT_COORDINATES = {
-  LAT: 35.65283,
-  LNG: 139.83947,
+  LAT: 35.68090,
+  LNG: 139.76895,
   ZOOM: 10,
 };
 
@@ -24,7 +29,6 @@ const ADVERT_PIN = {
   ANCHOR: [ 20, 40 ],
 };
 
-const adForm = document.querySelector( '.ad-form' );
 const addressField = adForm.querySelector( '#address' );
 
 const map = L.map( 'map-canvas' );
@@ -48,6 +52,51 @@ const mainMarker = L.marker(
 
 const markerGroup = L.layerGroup().addTo( map );
 
+const advertPin = L.icon( {
+  iconUrl: ADVERT_PIN.URL,
+  iconSize: ADVERT_PIN.SIZE,
+  iconAnchor: ADVERT_PIN.ANCHOR,
+} );
+
+const createPin = ( advert ) => {
+  const marker = L.marker(
+    {
+      lat: advert.location.lat,
+      lng: advert.location.lng,
+    },
+    {
+      icon: advertPin,
+    },
+  );
+
+  marker
+    .addTo( markerGroup )
+    .bindPopup( createAdvert( advert ) );
+};
+
+const createAdvertsPins = ( adverts ) => {
+  adverts.filter( compareAdvertData )
+    .slice( 0, ADS_COUNT )
+    .forEach( ( advert ) => {
+      createPin( advert );
+    } );
+};
+
+let advertsList = [];
+
+getData( ( adverts ) => {
+  advertsList = adverts.slice();
+  createAdvertsPins( advertsList );
+  setFilterActivity( true );
+}, () => showAlert( 'При загрузке данных с сервера произошла ошибка' ) );
+
+const filterChangeHandler = debounce( () => {
+  markerGroup.clearLayers();
+  createAdvertsPins( advertsList );
+}, RERENDER_DELAY );
+
+mapFilters.addEventListener( 'change', filterChangeHandler );
+
 const initMainPinCoordinates = () => {
   mainMarker.setLatLng( {
     lat: DEFAULT_COORDINATES.LAT,
@@ -66,7 +115,7 @@ const initMap = () => {
   );
 
   map.on( 'load', () => {
-    setPageActivity( true );
+    setFormActivity( true );
     validateForm();
     addressField.value = `${ DEFAULT_COORDINATES.LAT }, ${ DEFAULT_COORDINATES.LNG }`;
   } ).setView( {
@@ -80,38 +129,11 @@ const initMap = () => {
   mainMarker.on( 'moveend', ( evt ) => {
     addressField.value = `${ evt.target.getLatLng().lat.toFixed( FRACTION_DIGITS ) }, ${ evt.target.getLatLng().lng.toFixed( FRACTION_DIGITS ) }`;
   } );
-
-  const advertPin = L.icon( {
-    iconUrl: ADVERT_PIN.URL,
-    iconSize: ADVERT_PIN.SIZE,
-    iconAnchor: ADVERT_PIN.ANCHOR,
-  } );
-
-  const createPin = ( advert ) => {
-    const marker = L.marker(
-      {
-        lat: advert.location.lat,
-        lng: advert.location.lng,
-      },
-      {
-        icon: advertPin,
-      },
-    );
-
-    marker
-      .addTo( markerGroup )
-      .bindPopup( createAdvert( advert ) );
-  };
-
-  getData( ( adverts ) => {
-    adverts.forEach( ( advert ) => {
-      createPin( advert );
-    } );
-  }, () => showAlert( 'При загрузке данных с сервера произошла ошибка' ) );
 };
 
 const resetMapHandler = () => {
   initMainPinCoordinates();
+  createAdvertsPins( advertsList );
 
   markerGroup.eachLayer( ( layer ) => {
     layer.closePopup();

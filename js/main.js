@@ -1,6 +1,6 @@
-import './utils/alert.js';
-import { setPageActivity } from './page.js';
+import { setFilterActivity, setFormActivity } from './page.js';
 import { initMap } from './map.js';
 
-setPageActivity( false );
+setFilterActivity( false );
+setFormActivity( false );
 initMap();

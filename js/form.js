@@ -1,3 +1,5 @@
+import { adForm, mapFilters } from './data.js';
+import { declension } from './utils/declension.js';
 import { resetMapHandler } from './map.js';
 import { sendData } from './api.js';
 
@@ -10,7 +12,7 @@ const NOT_FOR_GUESTS_VALUES = {
   ROOMS: 100,
 };
 
-const TYPES = {
+const OFFER_TYPES_PRICES = {
   bungalow: 0,
   flat: 1000,
   hotel: 3000,
@@ -18,8 +20,12 @@ const TYPES = {
   palace: 10000,
 };
 
-const adForm = document.querySelector( '.ad-form' );
-const mapFilters = document.querySelector( '.map__filters' );
+const SYMBOLS_DECLENSIONS = [
+  'символ',
+  'символа',
+  'символов',
+];
+
 const adFormTitle = adForm.querySelector( '#title' );
 const adFormType = adForm.querySelector( '#type' );
 const adFormPrice = adForm.querySelector( '#price' );
@@ -36,15 +42,17 @@ const messageErrorTemplate = document.querySelector( '#error' ).content.querySel
 const messageError = messageErrorTemplate.cloneNode( true );
 
 const setPriceValue = ( value ) => {
-  adFormPrice.placeholder = `от ${ TYPES[ value ] }`;
-  adFormPrice.setAttribute( 'min', TYPES[ value ] );
+  adFormPrice.placeholder = `от ${ OFFER_TYPES_PRICES[ value ] }`;
+  adFormPrice.setAttribute( 'min', OFFER_TYPES_PRICES[ value ] );
 };
 
 const titleValidateHandler = () => {
   const valueLength = adFormTitle.value.length;
+  const remainderLength = MIN_TITLE_LENGTH - valueLength;
+  const symbolsDeclension = declension( remainderLength, SYMBOLS_DECLENSIONS );
 
   if( valueLength < MIN_TITLE_LENGTH ) {
-    adFormTitle.setCustomValidity( `Ещё ${ MIN_TITLE_LENGTH - valueLength } символов` );
+    adFormTitle.setCustomValidity( `Ещё ${ remainderLength } ${ symbolsDeclension }` );
     adFormTitle.classList.add( ERROR_CLASS );
   } else {
     adFormTitle.setCustomValidity( '' );
@@ -58,8 +66,8 @@ const priceValidateHandler = () => {
   const type = adFormType.value;
   const value = adFormPrice.value;
 
-  if( value < TYPES[ type ] ) {
-    adFormPrice.setCustomValidity( `Минимальная цена начинается от ${ TYPES[ type ] }` );
+  if( value < OFFER_TYPES_PRICES[ type ] ) {
+    adFormPrice.setCustomValidity( `Минимальная цена начинается от ${ OFFER_TYPES_PRICES[ type ] }` );
     adFormPrice.classList.add( ERROR_CLASS );
   } else if( value > MAX_PRICE_VALUE ) {
     adFormPrice.setCustomValidity( 'Цена должна быть меньше или равна 1000000' );
@@ -78,8 +86,8 @@ const typeChangePriceHandler = ( evt ) => {
   const type = adFormType.value;
   const price = adFormPrice.value;
 
-  if( price && price < TYPES[ type ] ) {
-    adFormPrice.setCustomValidity( `Минимальная цена начинается от ${ TYPES[ type ] }` );
+  if( price && price < OFFER_TYPES_PRICES[ type ] ) {
+    adFormPrice.setCustomValidity( `Минимальная цена начинается от ${ OFFER_TYPES_PRICES[ type ] }` );
     adFormPrice.classList.add( ERROR_CLASS );
   } else {
     adFormPrice.setCustomValidity( '' );
@@ -110,13 +118,8 @@ const roomsValidateHandler = () => {
   adFormRooms.reportValidity();
 };
 
-const timeInValidateHandler = ( evt ) => {
-  adFormTimeOut.value = evt.target.value;
-};
-
-const timeOutValidateHandler = ( evt ) => {
-  adFormTimeIn.value = evt.target.value;
-};
+const timeInValidateHandler = ( evt ) => adFormTimeOut.value = evt.target.value;
+const timeOutValidateHandler = ( evt ) => adFormTimeIn.value = evt.target.value;
 
 const resetFormHandler = () => {
   adForm.reset();
@@ -125,7 +128,7 @@ const resetFormHandler = () => {
 };
 
 const initMessages = () => {
-  messageSuccess.classList.add('hidden');
+  messageSuccess.classList.add( 'hidden' );
   messageError.classList.add( 'hidden' );
 
   document.body.appendChild( messageSuccess );
@@ -133,18 +136,13 @@ const initMessages = () => {
 
   document.addEventListener( 'keydown', ( evt ) => {
     if( evt.key === 'Escape' ) {
-      messageSuccess.classList.add('hidden');
+      messageSuccess.classList.add( 'hidden' );
       messageError.classList.add( 'hidden' );
     }
   } );
 
-  messageSuccess.addEventListener( 'click', () => {
-    messageSuccess.classList.add( 'hidden' );
-  } );
-
-  messageError.addEventListener( 'click', () => {
-    messageError.classList.add( 'hidden' );
-  } );
+  messageSuccess.addEventListener( 'click', () => messageSuccess.classList.add( 'hidden' ) );
+  messageError.addEventListener( 'click', () => messageError.classList.add( 'hidden' ) );
 };
 
 const validateForm = () => {
