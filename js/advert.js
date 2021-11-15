@@ -23,7 +23,9 @@ const GUESTS_DECLENSIONS = [
 const advertTemplate = document.querySelector( '#card' ).content.querySelector( '.popup' );
 
 const addAdvertTextContent = ( element, selector, content ) => {
-  content ? element.querySelector( selector ).textContent = content : element.querySelector( selector ).remove();
+  content
+    ? element.querySelector( selector ).textContent = content
+    : element.querySelector( selector ).remove();
 };
 
 const createAdvert = ( { author, offer } ) => {
@@ -43,10 +45,15 @@ const createAdvert = ( { author, offer } ) => {
   addAdvertTextContent( advert, '.popup__description', offer.description );
   addAdvertTextContent( advert, '.popup__type', OFFER_TYPES_NAMES[ offer.type ] );
 
-  offer.price ? priceElement.textContent = `${ offer.price } ₽/ночь` : priceElement.remove();
-  offer.checkin && offer.checkout ? timeElement.textContent = `Заезд после ${ offer.checkin }, выезд до ${ offer.checkout }` : timeElement.remove();
-  offer.rooms && offer.guests ? capacityElement.textContent = `${ offer.rooms } ${ roomsDeclension } для ${ offer.guests } ${ guestsDeclension }` :
-    capacityElement.remove();
+  offer.price
+    ? priceElement.textContent = `${ offer.price } ₽/ночь`
+    : priceElement.remove();
+  offer.checkin && offer.checkout
+    ? timeElement.textContent = `Заезд после ${ offer.checkin }, выезд до ${ offer.checkout }`
+    : timeElement.remove();
+  offer.rooms && offer.guests
+    ? capacityElement.textContent = `${ offer.rooms } ${ roomsDeclension } для ${ offer.guests } ${ guestsDeclension }`
+    : capacityElement.remove();
 
 
   advert.querySelectorAll( '.popup__feature' ).forEach( ( feature ) => {

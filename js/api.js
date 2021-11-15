@@ -6,7 +6,9 @@ const sendData = ( onSuccess, onError, body ) => {
       body,
     },
   ).then( ( response ) => {
-    response.ok ? onSuccess() : onError();
+    response.ok
+      ? onSuccess()
+      : onError();
   } ).catch( () => {
     onError();
   } );
