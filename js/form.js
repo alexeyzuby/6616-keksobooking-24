@@ -6,6 +6,7 @@ import { sendData } from './api.js';
 const MIN_TITLE_LENGTH = 30;
 const MAX_PRICE_VALUE = 1000000;
 const ERROR_CLASS = 'has-error';
+const DEFAULT_AVATAR = 'img/muffin-grey.svg';
 
 const NOT_FOR_GUESTS_VALUES = {
   CAPACITY: 0,
@@ -26,6 +27,12 @@ const SYMBOLS_DECLENSIONS = [
   'символов',
 ];
 
+const PHOTO = {
+  WIDTH: 70,
+  HEIGHT: 70,
+  ALT: 'Фотография жилья',
+};
+
 const adFormTitle = adForm.querySelector( '#title' );
 const adFormType = adForm.querySelector( '#type' );
 const adFormPrice = adForm.querySelector( '#price' );
@@ -40,6 +47,11 @@ const messageSuccessTemplate = document.querySelector( '#success' ).content.quer
 const messageSuccess = messageSuccessTemplate.cloneNode( true );
 const messageErrorTemplate = document.querySelector( '#error' ).content.querySelector( '.error' );
 const messageError = messageErrorTemplate.cloneNode( true );
+
+const avatarInput = adForm.querySelector( '#avatar' );
+const avatarPreview = adForm.querySelector( '.ad-form-header__preview img' );
+const photoInput = adForm.querySelector( '#images' );
+const photoPreview = adForm.querySelector( '.ad-form__photo' );
 
 const setPriceValue = ( value ) => {
   adFormPrice.placeholder = `от ${ OFFER_TYPES_PRICES[ value ] }`;
@@ -121,9 +133,32 @@ const roomsValidateHandler = () => {
 const timeInValidateHandler = ( evt ) => adFormTimeOut.value = evt.target.value;
 const timeOutValidateHandler = ( evt ) => adFormTimeIn.value = evt.target.value;
 
+avatarInput.addEventListener( 'change', () => {
+  const file = avatarInput.files[ 0 ];
+
+  if( file.type.match( 'image.*' ) ) {
+    avatarPreview.src = URL.createObjectURL( file );
+  }
+} );
+
+photoInput.addEventListener( 'change', () => {
+  const file = photoInput.files[ 0 ];
+
+  if( file.type.match( 'image.*' ) ) {
+    const photo = document.createElement( 'img' );
+    photo.src = URL.createObjectURL( file );
+    photo.width = PHOTO.WIDTH;
+    photo.height = PHOTO.HEIGHT;
+    photo.alt = PHOTO.ALT;
+    photoPreview.appendChild( photo );
+  }
+} );
+
 const resetFormHandler = () => {
   adForm.reset();
   mapFilters.reset();
+  avatarPreview.src = DEFAULT_AVATAR;
+  photoPreview.removeChild( photoPreview.children[ 0 ] );
   setPriceValue( adFormType.value );
 };
 

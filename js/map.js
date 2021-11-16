@@ -1,6 +1,6 @@
 import { adForm, mapFilters } from './data.js';
 import { createAdvert } from './advert.js';
-import { compareAdvertData } from './filter.js';
+import { compareAdvertsData } from './filter.js';
 import { getData } from './api.js';
 import { setFilterActivity, setFormActivity } from './page.js';
 import { showAlert } from './alert.js';
@@ -75,7 +75,7 @@ const createPin = ( advert ) => {
 };
 
 const createAdvertsPins = ( adverts ) => {
-  adverts.filter( compareAdvertData )
+  adverts.filter( compareAdvertsData )
     .slice( 0, ADS_COUNT )
     .forEach( ( advert ) => {
       createPin( advert );

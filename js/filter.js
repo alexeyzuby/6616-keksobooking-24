@@ -22,25 +22,16 @@ const housingPriceValues = {
   },
 };
 
-const compareAdvertsType = ( data ) => housingTypeSelect.value === FILTER_DEFAULT_VALUE || data.offer.type === housingTypeSelect.value;
-const compareAdvertsPrice = ( data ) => housingPriceSelect.value === FILTER_DEFAULT_VALUE || data.offer.price >= housingPriceValues[ housingPriceSelect.value ].min && data.offer.price < housingPriceValues[ housingPriceSelect.value ].max;
-const compareAdvertsRooms = ( data ) => housingRoomsSelect.value === FILTER_DEFAULT_VALUE || data.offer.rooms.toString() === housingRoomsSelect.value;
-const compareAdvertsGuests = ( data ) => housingGuestsSelect.value === FILTER_DEFAULT_VALUE || data.offer.guests.toString() === housingGuestsSelect.value;
+const compareTypes = ( data ) => housingTypeSelect.value === FILTER_DEFAULT_VALUE || data.offer.type === housingTypeSelect.value;
+const comparePrices = ( data ) => housingPriceSelect.value === FILTER_DEFAULT_VALUE || data.offer.price >= housingPriceValues[ housingPriceSelect.value ].min && data.offer.price < housingPriceValues[ housingPriceSelect.value ].max;
+const compareRooms = ( data ) => housingRoomsSelect.value === FILTER_DEFAULT_VALUE || data.offer.rooms.toString() === housingRoomsSelect.value;
+const compareGuests = ( data ) => housingGuestsSelect.value === FILTER_DEFAULT_VALUE || data.offer.guests.toString() === housingGuestsSelect.value;
 
-const compareAdvertsFeatures = ( data ) => {
-  const selectedFeatures = document.querySelectorAll( '[name="features"]:checked' );
-
-  let isChecked = true;
-
-  selectedFeatures.forEach( ( item, index ) => {
-    if( !data.offer.features || data.offer.features.indexOf( selectedFeatures[ index ].value ) === -1 ) {
-      isChecked = false;
-    }
-  } );
-
-  return isChecked;
+const compareFeatures = ( data ) => {
+  const selectedFeatures = mapFilters.querySelectorAll( '[name="features"]:checked' );
+  return !data.offer.features ? false : Array.from( selectedFeatures ).every( ( feature ) => data.offer.features.includes( feature.value ) );
 };
 
-const compareAdvertData = ( data ) => compareAdvertsType( data ) && compareAdvertsPrice( data ) && compareAdvertsRooms( data ) && compareAdvertsGuests( data ) && compareAdvertsFeatures( data );
+const compareAdvertsData = ( data ) => [ compareTypes, comparePrices, compareRooms, compareGuests, compareFeatures ].every( ( callback ) => callback( data ) );
 
-export { compareAdvertData };
+export { compareAdvertsData };
