@@ -7,6 +7,7 @@ const MIN_TITLE_LENGTH = 30;
 const MAX_PRICE_VALUE = 1000000;
 const ERROR_CLASS = 'has-error';
 const DEFAULT_AVATAR = 'img/muffin-grey.svg';
+const FILE_TYPES = [ 'gif', 'jpg', 'jpeg', 'png' ];
 
 const NOT_FOR_GUESTS_VALUES = {
   CAPACITY: 0,
@@ -135,16 +136,22 @@ const timeOutValidateHandler = ( evt ) => adFormTimeIn.value = evt.target.value;
 
 avatarInput.addEventListener( 'change', () => {
   const file = avatarInput.files[ 0 ];
+  const fileName = file.name.toLowerCase();
 
-  if( file.type.match( 'image.*' ) ) {
+  const matches = FILE_TYPES.some( ( it ) => fileName.endsWith( it ) );
+
+  if (matches) {
     avatarPreview.src = URL.createObjectURL( file );
   }
 } );
 
 photoInput.addEventListener( 'change', () => {
   const file = photoInput.files[ 0 ];
+  const fileName = file.name.toLowerCase();
 
-  if( file.type.match( 'image.*' ) ) {
+  const matches = FILE_TYPES.some( ( it ) => fileName.endsWith( it ) );
+
+  if( matches ) {
     const photo = document.createElement( 'img' );
     photo.src = URL.createObjectURL( file );
     photo.width = PHOTO.WIDTH;
