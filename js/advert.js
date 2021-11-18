@@ -1,4 +1,4 @@
-import { declension } from './utils/declension.js';
+import { setDeclension } from './utils/declension.js';
 
 const OFFER_TYPES_NAMES = {
   palace: 'Дворец',
@@ -8,13 +8,13 @@ const OFFER_TYPES_NAMES = {
   hotel: 'Отель',
 };
 
-const ROOMS_DECLENSIONS = [
+const DECLENSIONS_OF_ROOMS = [
   'комната',
   'комнаты',
   'комнат',
 ];
 
-const GUESTS_DECLENSIONS = [
+const DECLENSIONS_OF_GUESTS = [
   'гостя',
   'гостей',
   'гостей',
@@ -35,8 +35,8 @@ const createAdvert = ( { author, offer } ) => {
   const capacityElement = advert.querySelector( '.popup__text--capacity' );
   const photoElement = advert.querySelector( '.popup__photo' );
   const photosElement = advert.querySelector( '.popup__photos' );
-  const roomsDeclension = declension( offer.rooms, ROOMS_DECLENSIONS );
-  const guestsDeclension = declension( offer.guests, GUESTS_DECLENSIONS );
+  const roomsDeclension = setDeclension( offer.rooms, DECLENSIONS_OF_ROOMS );
+  const guestsDeclension = setDeclension( offer.guests, DECLENSIONS_OF_GUESTS );
 
   advert.querySelector( '.popup__avatar' ).src = author.avatar ? author.avatar : 'img/avatars/default.png';
 

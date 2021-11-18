@@ -19,14 +19,14 @@ const DEFAULT_COORDINATES = {
 
 const MAIN_PIN = {
   URL: 'img/main-pin.svg',
-  SIZE: [ 52, 52 ],
-  ANCHOR: [ 26, 52 ],
+  ICON_SIZES: [ 52, 52 ],
+  ANCHOR_SIZES: [ 26, 52 ],
 };
 
 const ADVERT_PIN = {
   URL: 'img/pin.svg',
-  SIZE: [ 40, 40 ],
-  ANCHOR: [ 20, 40 ],
+  ICON_SIZES: [ 40, 40 ],
+  ANCHOR_SIZES: [ 20, 40 ],
 };
 
 const addressField = adForm.querySelector( '#address' );
@@ -35,8 +35,8 @@ const map = L.map( 'map-canvas' );
 
 const mainPin = L.icon( {
   iconUrl: MAIN_PIN.URL,
-  iconSize: MAIN_PIN.SIZE,
-  iconAnchor: MAIN_PIN.ANCHOR,
+  iconSize: MAIN_PIN.ICON_SIZES,
+  iconAnchor: MAIN_PIN.ANCHOR_SIZES,
 } );
 
 const mainMarker = L.marker(
@@ -54,8 +54,8 @@ const markerGroup = L.layerGroup().addTo( map );
 
 const advertPin = L.icon( {
   iconUrl: ADVERT_PIN.URL,
-  iconSize: ADVERT_PIN.SIZE,
-  iconAnchor: ADVERT_PIN.ANCHOR,
+  iconSize: ADVERT_PIN.ICON_SIZES,
+  iconAnchor: ADVERT_PIN.ANCHOR_SIZES,
 } );
 
 const createPin = ( advert ) => {
@@ -82,22 +82,22 @@ const createAdvertsPins = ( adverts ) => {
     } );
 };
 
-let advertsList = [];
+let advertsElements = [];
 
 getData( ( adverts ) => {
-  advertsList = adverts.slice();
-  createAdvertsPins( advertsList );
+  advertsElements = adverts.slice();
+  createAdvertsPins( advertsElements );
   setFilterActivity( true );
 }, () => showAlert( 'При загрузке данных с сервера произошла ошибка' ) );
 
 const filterChangeHandler = debounce( () => {
   markerGroup.clearLayers();
-  createAdvertsPins( advertsList );
+  createAdvertsPins( advertsElements );
 }, RERENDER_DELAY );
 
 mapFilters.addEventListener( 'change', filterChangeHandler );
 
-const initMainPinCoordinates = () => {
+const initializeMainPinCoordinates = () => {
   mainMarker.setLatLng( {
     lat: DEFAULT_COORDINATES.LAT,
     lng: DEFAULT_COORDINATES.LNG,
@@ -106,7 +106,7 @@ const initMainPinCoordinates = () => {
   addressField.value = `${ DEFAULT_COORDINATES.LAT }, ${ DEFAULT_COORDINATES.LNG }`;
 };
 
-const initMap = () => {
+const initializeMap = () => {
   const mapLayout = L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     {
@@ -132,12 +132,12 @@ const initMap = () => {
 };
 
 const resetMapHandler = () => {
-  initMainPinCoordinates();
-  createAdvertsPins( advertsList );
+  initializeMainPinCoordinates();
+  createAdvertsPins( advertsElements );
 
   markerGroup.eachLayer( ( layer ) => {
     layer.closePopup();
   } );
 };
 
-export { initMap, resetMapHandler };
+export { initializeMap, resetMapHandler };

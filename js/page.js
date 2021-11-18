@@ -9,13 +9,13 @@ const adFormFields = adForm.querySelectorAll( 'fieldset' );
 const mapFilterSelects = mapFilters.querySelectorAll( '.map__filter' );
 const mapFilterFeatures = mapFilters.querySelector( '.map__features' );
 
-const toggleDisabledClass = ( isActive, selector, disabledClass ) => {
+const switchDisabledClass = ( isActive, selector, disabledClass ) => {
   isActive
     ? selector.classList.remove( disabledClass )
     : selector.classList.add( disabledClass );
 };
 
-const toggleDisabledAttr = ( isActive, selector ) => {
+const switchDisabledAttr = ( isActive, selector ) => {
   selector.forEach( ( item ) => {
     item.disabled = !isActive;
   } );
@@ -26,8 +26,8 @@ const setFilterActivity = ( isActive ) => {
     throw new Error( 'isActive param must be boolean' );
   }
 
-  toggleDisabledClass( isActive, mapFilters, DISABLED_CLASSES.MAP );
-  toggleDisabledAttr( isActive, mapFilterSelects );
+  switchDisabledClass( isActive, mapFilters, DISABLED_CLASSES.MAP );
+  switchDisabledAttr( isActive, mapFilterSelects );
 
   mapFilterFeatures.disabled = !isActive;
 };
@@ -37,8 +37,8 @@ const setFormActivity = ( isActive ) => {
     throw new Error( 'isActive param must be boolean' );
   }
 
-  toggleDisabledClass( isActive, adForm, DISABLED_CLASSES.AD );
-  toggleDisabledAttr( isActive, adFormFields );
+  switchDisabledClass( isActive, adForm, DISABLED_CLASSES.AD );
+  switchDisabledAttr( isActive, adFormFields );
 };
 
 export { setFilterActivity, setFormActivity };
