@@ -1,5 +1,5 @@
 import { adForm, mapFilters } from './data.js';
-import { declension } from './utils/declension.js';
+import { setDeclension } from './utils/declension.js';
 import { resetMapHandler } from './map.js';
 import { sendData } from './api.js';
 
@@ -7,7 +7,7 @@ const MIN_TITLE_LENGTH = 30;
 const MAX_PRICE_VALUE = 1000000;
 const ERROR_CLASS = 'has-error';
 const DEFAULT_AVATAR = 'img/muffin-grey.svg';
-const FILE_TYPES = [ 'gif', 'jpg', 'jpeg', 'png' ];
+const TYPES_OF_FILES = [ 'gif', 'jpg', 'jpeg', 'png' ];
 
 const NOT_FOR_GUESTS_VALUES = {
   CAPACITY: 0,
@@ -22,7 +22,7 @@ const OFFER_TYPES_PRICES = {
   palace: 10000,
 };
 
-const SYMBOLS_DECLENSIONS = [
+const DECLENSIONS_OF_SYMBOLS = [
   'символ',
   'символа',
   'символов',
@@ -59,10 +59,10 @@ const setPriceValue = ( value ) => {
   adFormPrice.setAttribute( 'min', OFFER_TYPES_PRICES[ value ] );
 };
 
-const titleValidateHandler = () => {
+const validateTitle = () => {
   const valueLength = adFormTitle.value.length;
   const remainderLength = MIN_TITLE_LENGTH - valueLength;
-  const symbolsDeclension = declension( remainderLength, SYMBOLS_DECLENSIONS );
+  const symbolsDeclension = setDeclension( remainderLength, DECLENSIONS_OF_SYMBOLS );
 
   if( valueLength < MIN_TITLE_LENGTH ) {
     adFormTitle.setCustomValidity( `Ещё ${ remainderLength } ${ symbolsDeclension }` );
@@ -75,7 +75,7 @@ const titleValidateHandler = () => {
   adFormTitle.reportValidity();
 };
 
-const priceValidateHandler = () => {
+const validatePrice = () => {
   const type = adFormType.value;
   const value = adFormPrice.value;
 
@@ -93,7 +93,7 @@ const priceValidateHandler = () => {
   adFormPrice.reportValidity();
 };
 
-const typeChangePriceHandler = ( evt ) => {
+const changePriceType = ( evt ) => {
   setPriceValue( evt.target.value );
 
   const type = adFormType.value;
@@ -110,7 +110,7 @@ const typeChangePriceHandler = ( evt ) => {
   adFormPrice.reportValidity();
 };
 
-const roomsValidateHandler = () => {
+const validateRooms = () => {
   const rooms = Number( adFormRooms.value );
   const capacity = Number( adFormCapacity.value );
 
@@ -131,14 +131,14 @@ const roomsValidateHandler = () => {
   adFormRooms.reportValidity();
 };
 
-const timeInValidateHandler = ( evt ) => adFormTimeOut.value = evt.target.value;
-const timeOutValidateHandler = ( evt ) => adFormTimeIn.value = evt.target.value;
+const validateTimeIn = ( evt ) => adFormTimeOut.value = evt.target.value;
+const validateTimeOut = ( evt ) => adFormTimeIn.value = evt.target.value;
 
 avatarInput.addEventListener( 'change', () => {
   const file = avatarInput.files[ 0 ];
   const fileName = file.name.toLowerCase();
 
-  const matches = FILE_TYPES.some( ( it ) => fileName.endsWith( it ) );
+  const matches = TYPES_OF_FILES.some( ( it ) => fileName.endsWith( it ) );
 
   if (matches) {
     avatarPreview.src = URL.createObjectURL( file );
@@ -149,7 +149,7 @@ photoInput.addEventListener( 'change', () => {
   const file = photoInput.files[ 0 ];
   const fileName = file.name.toLowerCase();
 
-  const matches = FILE_TYPES.some( ( it ) => fileName.endsWith( it ) );
+  const matches = TYPES_OF_FILES.some( ( it ) => fileName.endsWith( it ) );
 
   if( matches ) {
     const photo = document.createElement( 'img' );
@@ -162,14 +162,19 @@ photoInput.addEventListener( 'change', () => {
 } );
 
 const resetFormHandler = () => {
+  const photoPreviewChild = photoPreview.children[ 0 ];
+
   adForm.reset();
   mapFilters.reset();
-  avatarPreview.src = DEFAULT_AVATAR;
-  photoPreview.removeChild( photoPreview.children[ 0 ] );
   setPriceValue( adFormType.value );
+  avatarPreview.src = DEFAULT_AVATAR;
+
+  if( photoPreviewChild ) {
+    photoPreview.removeChild( photoPreviewChild );
+  }
 };
 
-const initMessages = () => {
+const initializeMessages = () => {
   messageSuccess.classList.add( 'hidden' );
   messageError.classList.add( 'hidden' );
 
@@ -188,15 +193,15 @@ const initMessages = () => {
 };
 
 const validateForm = () => {
-  initMessages();
+  initializeMessages();
   setPriceValue( adFormType.value );
-  adFormTitle.addEventListener( 'input', titleValidateHandler );
-  adFormPrice.addEventListener( 'input', priceValidateHandler );
-  adFormType.addEventListener( 'change', typeChangePriceHandler );
-  adFormRooms.addEventListener( 'change', roomsValidateHandler );
-  adFormCapacity.addEventListener( 'change', roomsValidateHandler );
-  adFormTimeIn.addEventListener( 'change', timeInValidateHandler );
-  adFormTimeOut.addEventListener( 'change', timeOutValidateHandler );
+  adFormTitle.addEventListener( 'input', validateTitle );
+  adFormPrice.addEventListener( 'input', validatePrice );
+  adFormType.addEventListener( 'change', changePriceType );
+  adFormRooms.addEventListener( 'change', validateRooms );
+  adFormCapacity.addEventListener( 'change', validateRooms );
+  adFormTimeIn.addEventListener( 'change', validateTimeIn );
+  adFormTimeOut.addEventListener( 'change', validateTimeOut );
 };
 
 adFormSubmit.addEventListener( 'click', ( evt ) => {
